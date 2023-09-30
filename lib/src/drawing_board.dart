@@ -2,8 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'drawing_controller.dart';
+import 'package:zoom_widget/zoom_widget.dart' as zoom;
 
+import 'drawing_controller.dart';
 import 'helper/ex_value_builder.dart';
 import 'helper/get_size.dart';
 import 'paint_contents/circle.dart';
@@ -141,22 +142,29 @@ class _DrawingBoardState extends State<DrawingBoard> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = InteractiveViewer(
+    Widget content = zoom.Zoom(
+      doubleTapZoom: false,
       maxScale: widget.maxScale,
-      minScale: widget.minScale,
-      boundaryMargin: widget.boardBoundaryMargin ??
-          EdgeInsets.all(MediaQuery.of(context).size.width),
-      clipBehavior: widget.boardClipBehavior,
-      panAxis: widget.panAxis,
-      constrained: widget.boardConstrained,
-      onInteractionStart: widget.onInteractionStart,
-      onInteractionUpdate: widget.onInteractionUpdate,
-      onInteractionEnd: widget.onInteractionEnd,
-      scaleFactor: widget.boardScaleFactor,
-      panEnabled: widget.boardPanEnabled,
-      scaleEnabled: widget.boardScaleEnabled,
-      transformationController: widget.transformationController,
-      child: Align(alignment: widget.alignment, child: _buildBoard),
+      initTotalZoomOut: true,
+      onTap: () {
+
+      },
+      onPanUpPosition: (Offset offset) {
+        print('panUp $offset');
+      },
+      onPanDownPosition: (Offset offset) {
+        print('panDown $offset');
+      },
+      onPositionUpdate: (Offset offset) {
+        print('positionUpdate $offset');
+      },
+      onScaleUpdate: (double x, double y) {
+        print('scaleUpdate $x, $y');
+      },
+      child: Align(
+        alignment: widget.alignment,
+        child: _buildBoard,
+      ),
     );
 
     if (widget.showDefaultActions || widget.showDefaultTools) {
