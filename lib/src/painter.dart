@@ -4,7 +4,7 @@ import 'drawing_controller.dart';
 import 'helper/ex_value_builder.dart';
 import 'paint_contents/paint_content.dart';
 
-/// 绘图板
+/// Drawing board
 class Painter extends StatelessWidget {
   const Painter({
     super.key,
@@ -15,22 +15,22 @@ class Painter extends StatelessWidget {
     this.onPointerUp,
   });
 
-  /// 绘制控制器
+  /// Drawing controller
   final DrawingController drawingController;
 
-  /// 开始拖动
+  /// Callback function for the start of dragging
   final Function(PointerDownEvent pde)? onPointerDown;
 
-  /// 正在拖动
+  /// Callback function for dragging
   final Function(PointerMoveEvent pme)? onPointerMove;
 
-  /// 结束拖动
+  /// Callback function for the end of dragging
   final Function(PointerUpEvent pue)? onPointerUp;
 
-  /// 边缘裁剪方式
+  /// Edge cropping method
   final Clip clipBehavior;
 
-  /// 手指落下
+  /// Fingers down
   void _onPointerDown(PointerDownEvent pde) {
     if (!drawingController.couldStart(1)) {
       return;
@@ -40,7 +40,7 @@ class Painter extends StatelessWidget {
     onPointerDown?.call(pde);
   }
 
-  /// 手指移动
+  /// Fingers moving
   void _onPointerMove(PointerMoveEvent pme) {
     if (!drawingController.couldDraw) {
       if (drawingController.currentContent != null) {
@@ -53,7 +53,7 @@ class Painter extends StatelessWidget {
     onPointerMove?.call(pme);
   }
 
-  /// 手指抬起
+  /// Fingers up
   void _onPointerUp(PointerUpEvent pue) {
     if (!drawingController.couldDraw ||
         drawingController.currentContent == null) {
@@ -68,7 +68,7 @@ class Painter extends StatelessWidget {
     onPointerUp?.call(pue);
   }
 
-  /// GestureDetector 占位
+  /// GestureDetector occupying space
   void _onPanDown(DragDownDetails ddd) {}
 
   void _onPanUpdate(DragUpdateDetails dud) {}
@@ -112,7 +112,7 @@ class Painter extends StatelessWidget {
   }
 }
 
-/// 表层画板
+/// Surface palette
 class _UpPainter extends CustomPainter {
   _UpPainter({required this.controller}) : super(repaint: controller.painter);
 
@@ -131,7 +131,7 @@ class _UpPainter extends CustomPainter {
   bool shouldRepaint(covariant _UpPainter oldDelegate) => false;
 }
 
-/// 底层画板
+/// Underlying palette
 class _DeepPainter extends CustomPainter {
   _DeepPainter({required this.controller})
       : super(repaint: controller.realPainter);

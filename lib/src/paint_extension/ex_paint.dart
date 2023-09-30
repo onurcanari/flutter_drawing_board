@@ -4,7 +4,7 @@ import 'ex_color_filter.dart';
 import 'ex_image_filter.dart';
 import 'ex_mask_filter.dart';
 
-/// 为`Paint`扩展`copyWith`
+/// Extend `Paint` with `copyWith`
 extension ExPaint on Paint {
   Paint copyWith({
     BlendMode? blendMode,

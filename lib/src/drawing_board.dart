@@ -15,13 +15,13 @@ import 'paint_contents/smooth_line.dart';
 import 'paint_contents/straight_line.dart';
 import 'painter.dart';
 
-/// 默认工具栏构建器
+/// Default tools builder
 typedef DefaultToolsBuilder = List<DefToolItem> Function(
   Type currType,
   DrawingController controller,
 );
 
-/// 画板
+/// Drawing board
 class DrawingBoard extends StatefulWidget {
   const DrawingBoard({
     super.key,
@@ -50,34 +50,34 @@ class DrawingBoard extends StatefulWidget {
     this.alignment = Alignment.topCenter,
   });
 
-  /// 画板背景控件
+  /// Background of the drawing board
   final Widget background;
 
-  /// 画板控制器
+  /// Controller of the drawing board
   final DrawingController? controller;
 
-  /// 显示默认样式的操作栏
+  /// Displays the default style action bar
   final bool showDefaultActions;
 
-  /// 显示默认样式的工具栏
+  /// Show default style toolbar
   final bool showDefaultTools;
 
-  /// 开始拖动
+  /// Callback function for the start of the dragging
   final Function(PointerDownEvent pde)? onPointerDown;
 
-  /// 正在拖动
+  /// Callback function for the dragging
   final Function(PointerMoveEvent pme)? onPointerMove;
 
-  /// 结束拖动
+  /// Callback function for the end of the dragging
   final Function(PointerUpEvent pue)? onPointerUp;
 
-  /// 边缘裁剪方式
+  /// Edge cropping method
   final Clip clipBehavior;
 
-  /// 默认工具栏构建器
+  /// Default toolbar builder
   final DefaultToolsBuilder? defaultToolsBuilder;
 
-  /// 缩放板属性
+  /// Properties for the zooming
   final Clip boardClipBehavior;
   final PanAxis panAxis;
   final EdgeInsets? boardBoundaryMargin;
@@ -93,7 +93,7 @@ class DrawingBoard extends StatefulWidget {
   final TransformationController? transformationController;
   final AlignmentGeometry alignment;
 
-  /// 默认工具项列表
+  /// Default tool list
   static List<DefToolItem> defaultTools(
       Type currType, DrawingController controller) {
     return <DefToolItem>[
@@ -186,7 +186,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建画板
+  /// Constructing the drawing board
   Widget get _buildBoard {
     return RepaintBoundary(
       key: _controller.painterKey,
@@ -225,13 +225,13 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建背景
+  /// Context of the image
   Widget get _buildImage => GetSize(
         onChange: (Size? size) => _controller.setBoardSize(size),
         child: widget.background,
       );
 
-  /// 构建绘制层
+  /// Constructing the drawing layer
   Widget get _buildPainter {
     return ExValueBuilder<DrawConfig>(
       valueListenable: _controller.drawConfig,
@@ -252,7 +252,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建默认操作栏
+  /// Building the default action bar
   Widget get _buildDefaultActions {
     return Material(
       color: Colors.white,
@@ -297,7 +297,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建默认工具栏
+  /// Building the default toolbar
   Widget get _buildDefaultTools {
     return Material(
       color: Colors.white,
@@ -325,7 +325,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
   }
 }
 
-/// 默认工具项配置文件
+/// Default tool item
 class DefToolItem {
   DefToolItem({
     required this.icon,
@@ -345,7 +345,7 @@ class DefToolItem {
   final Color activeColor;
 }
 
-/// 默认工具项 Widget
+/// Widget for the default tool items
 class _DefToolItemWidget extends StatelessWidget {
   const _DefToolItemWidget({
     required this.item,

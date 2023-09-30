@@ -3,10 +3,10 @@ import '../paint_extension/ex_offset.dart';
 import '../paint_extension/ex_paint.dart';
 import 'paint_content.dart';
 
-/// 笔触线条
+/// Brush line
 class SmoothLine extends PaintContent {
   SmoothLine({
-    /// 绘制影响因子，值越小线条越平滑，粗细变化越慢
+    /// Plotting influence factor, the smaller the value the smoother the line and the slower the change in thickness
     this.brushPrecision = 0.4,
   });
 
@@ -32,10 +32,10 @@ class SmoothLine extends PaintContent {
 
   final double brushPrecision;
 
-  /// 绘制点列表
+  /// Point list
   late List<Offset> points;
 
-  /// 点之间的绘制线条权重列表
+  /// List of weights for drawing lines between points
   late List<double> strokeWidthList;
 
   @override

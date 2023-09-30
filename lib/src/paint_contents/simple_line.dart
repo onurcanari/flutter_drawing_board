@@ -4,7 +4,7 @@ import '../paint_extension/ex_paint.dart';
 
 import 'paint_content.dart';
 
-/// 普通自由线条
+/// Simple line
 class SimpleLine extends PaintContent {
   SimpleLine();
 
@@ -20,7 +20,7 @@ class SimpleLine extends PaintContent {
     );
   }
 
-  /// 绘制路径
+  /// Drawing path
   DrawPath path = DrawPath();
 
   @override

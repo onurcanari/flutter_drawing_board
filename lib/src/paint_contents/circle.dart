@@ -4,7 +4,7 @@ import '../paint_extension/ex_paint.dart';
 
 import 'paint_content.dart';
 
-/// 圆
+/// Circle
 class Circle extends PaintContent {
   Circle({
     this.isEllipse = false,
@@ -33,22 +33,22 @@ class Circle extends PaintContent {
     );
   }
 
-  /// 是否为椭圆
+  /// Whether ellipse
   final bool isEllipse;
 
-  /// 从圆心开始绘制
+  /// Drawing from the center of the circle
   final bool startFromCenter;
 
-  /// 圆心
+  /// Center of the circle
   Offset center = Offset.zero;
 
-  /// 半径
+  /// Radius
   double radius = 0;
 
-  /// 起始点
+  /// Starting point
   Offset startPoint = Offset.zero;
 
-  /// 结束点
+  /// End point
   Offset endPoint = Offset.zero;
 
   @override

@@ -4,7 +4,7 @@ import '../paint_extension/ex_paint.dart';
 
 import 'paint_content.dart';
 
-/// 直线
+/// Straight line
 class StraightLine extends PaintContent {
   StraightLine();
 
