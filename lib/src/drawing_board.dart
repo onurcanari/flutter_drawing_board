@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:zoom_widget/zoom_widget.dart' as zoom;
 
+import 'color_picker_button.dart';
 import 'drawing_controller.dart';
 import 'helper/ex_value_builder.dart';
 import 'helper/get_size.dart';
@@ -259,6 +260,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
                 },
               ),
             ),
+            ColorPickerButton(controller: _controller),
             IconButton(
                 icon: const Icon(CupertinoIcons.arrow_turn_up_left),
                 onPressed: () => _controller.undo()),
