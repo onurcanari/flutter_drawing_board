@@ -34,20 +34,15 @@ class DrawingBoard extends StatefulWidget {
     this.onPointerUp,
     this.clipBehavior = Clip.antiAlias,
     this.defaultToolsBuilder,
-    this.boardClipBehavior = Clip.hardEdge,
-    this.panAxis = PanAxis.free,
-    this.boardBoundaryMargin,
-    this.boardConstrained = false,
     this.maxScale = 20,
-    this.minScale = 0.2,
-    this.boardPanEnabled = true,
-    this.boardScaleEnabled = true,
-    this.boardScaleFactor = 200.0,
-    this.onInteractionEnd,
-    this.onInteractionStart,
-    this.onInteractionUpdate,
-    this.transformationController,
     this.alignment = Alignment.topCenter,
+    this.doubleTapZoom,
+    this.initialTotalZoomOut,
+    this.onPanUpPosition,
+    this.onPanDownPosition,
+    this.onPositionUpdate,
+    this.onScaleUpdate,
+    this.onTap,
   });
 
   /// Background of the drawing board
@@ -78,20 +73,15 @@ class DrawingBoard extends StatefulWidget {
   final DefaultToolsBuilder? defaultToolsBuilder;
 
   /// Properties for the zooming
-  final Clip boardClipBehavior;
-  final PanAxis panAxis;
-  final EdgeInsets? boardBoundaryMargin;
-  final bool boardConstrained;
   final double maxScale;
-  final double minScale;
-  final void Function(ScaleEndDetails)? onInteractionEnd;
-  final void Function(ScaleStartDetails)? onInteractionStart;
-  final void Function(ScaleUpdateDetails)? onInteractionUpdate;
-  final bool boardPanEnabled;
-  final bool boardScaleEnabled;
-  final double boardScaleFactor;
-  final TransformationController? transformationController;
   final AlignmentGeometry alignment;
+  final bool? doubleTapZoom;
+  final bool? initialTotalZoomOut;
+  final void Function(Offset)? onPanUpPosition;
+  final void Function(Offset)? onPanDownPosition;
+  final void Function(Offset)? onPositionUpdate;
+  final void Function(double, double)? onScaleUpdate;
+  final void Function()? onTap;
 
   /// Default tool list
   static List<DefToolItem> defaultTools(
@@ -143,24 +133,14 @@ class _DrawingBoardState extends State<DrawingBoard> {
   @override
   Widget build(BuildContext context) {
     Widget content = zoom.Zoom(
-      doubleTapZoom: false,
       maxScale: widget.maxScale,
-      initTotalZoomOut: true,
-      onTap: () {
-
-      },
-      onPanUpPosition: (Offset offset) {
-        print('panUp $offset');
-      },
-      onPanDownPosition: (Offset offset) {
-        print('panDown $offset');
-      },
-      onPositionUpdate: (Offset offset) {
-        print('positionUpdate $offset');
-      },
-      onScaleUpdate: (double x, double y) {
-        print('scaleUpdate $x, $y');
-      },
+      doubleTapZoom: widget.doubleTapZoom ?? false,
+      initTotalZoomOut: widget.initialTotalZoomOut ?? true,
+      onTap: widget.onTap,
+      onPanUpPosition: widget.onPanUpPosition,
+      onPanDownPosition: widget.onPanDownPosition,
+      onPositionUpdate: widget.onPositionUpdate,
+      onScaleUpdate: widget.onScaleUpdate,
       child: Align(
         alignment: widget.alignment,
         child: _buildBoard,
