@@ -40,7 +40,12 @@ class ColorPickerButton extends StatelessWidget {
         shouldRebuild: (DrawConfig p, DrawConfig n) => p.color != n.color,
         builder: (_, DrawConfig dc, __) =>
             builder?.call(dc.color) ??
-            Container(width: 24, height: 24, color: dc.color),
+            Container(
+              width: 24,
+              height: 24,
+              color: dc.color,
+              margin: const EdgeInsets.all(10.0),
+            ),
       ),
     );
   }
