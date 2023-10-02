@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'drawing_controller.dart';
 import 'helper/ex_value_builder.dart';
 
-/// 操作栏构建器
+/// Action bar builder
 typedef ActionBuilder = Widget Function(DrawConfig config);
 
-/// 操作栏
+/// Action bar
 class ActionBar extends StatelessWidget {
   const ActionBar({
     super.key,
@@ -14,10 +14,10 @@ class ActionBar extends StatelessWidget {
     required this.builder,
   });
 
-  /// 控制器
+  /// Controller
   final DrawingController controller;
 
-  /// 构建器
+  /// Builder
   final ActionBuilder builder;
 
   @override

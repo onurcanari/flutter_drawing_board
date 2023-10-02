@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// ValueNotifier安全扩展
+/// Safe extension for ValueNotifier
 class SafeValueNotifier<T> extends ValueNotifier<T> {
   SafeValueNotifier(super.value);
 

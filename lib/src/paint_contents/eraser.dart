@@ -4,7 +4,7 @@ import '../paint_extension/ex_paint.dart';
 
 import 'paint_content.dart';
 
-/// 橡皮
+/// Eraser
 class Eraser extends PaintContent {
   Eraser({this.color = const Color(0xff000000)});
 
@@ -22,7 +22,7 @@ class Eraser extends PaintContent {
     );
   }
 
-  /// 擦除路径
+  /// Erase path
   DrawPath drawPath = DrawPath();
   final Color color;
 

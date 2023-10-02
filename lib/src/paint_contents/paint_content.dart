@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
-/// 绘制对象
+/// Abstract class for drawing objects
 abstract class PaintContent {
   PaintContent();
 
   PaintContent.paint(this.paint);
 
-  /// 画笔
+  /// Paintbrush
   late Paint paint;
 
-  /// 复制实例，避免对象传递
+  /// Duplicate instances to avoid object passing
   PaintContent copy();
 
-  /// 绘制核心方法
-  /// * [deeper] 当前是否为底层绘制
-  /// * 出于性能考虑
-  /// * 绘制过程为表层绘制，绘制完成抬起手指时会进行底层绘制
+  /// Mapping of core methods
+  /// * [deeper] Whether or not it is currently the bottom drawing
+  /// * For performance reasons
+  /// * The drawing process is a surface drawing, and the bottom drawing is done when the finger is lifted after the drawing is completed.
   void draw(Canvas canvas, Size size, bool deeper);
 
-  /// 正在绘制
+  /// Drawing in progress
   void drawing(Offset nowPoint);
 
-  /// 开始绘制
+  /// Start drawing
   void startDraw(Offset startPoint);
 
   /// toJson

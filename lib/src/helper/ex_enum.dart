@@ -1,5 +1,4 @@
-/// enum解析工具
-/// tools of convert enum
+/// Enum parsing tools
 class ExEnum {
   const ExEnum._();
 

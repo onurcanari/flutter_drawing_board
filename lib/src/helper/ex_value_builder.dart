@@ -1,5 +1,5 @@
-// 拷贝ValueListenableBuilder
-// 添加shouldRebuild方法
+// Copy of the ValueListenableBuilder
+// Adding the shouldRebuild method
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -23,7 +23,7 @@ class ExValueBuilder<T> extends StatefulWidget {
 
   final Widget? child;
 
-  ///是否进行重建
+  /// Whether to rebuild
   final bool Function(T previous, T next)? shouldRebuild;
 
   @override
@@ -58,7 +58,6 @@ class _ExValueBuilderState<T> extends State<ExValueBuilder<T>>
   }
 
   void _valueChanged() {
-    ///条件判断
     if (widget.shouldRebuild?.call(value, widget.valueListenable.value) ??
         true) {
       safeSetState(() {

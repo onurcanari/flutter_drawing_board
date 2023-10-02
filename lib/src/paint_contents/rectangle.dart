@@ -4,7 +4,7 @@ import '../paint_extension/ex_paint.dart';
 
 import 'paint_content.dart';
 
-/// 矩形
+/// Rectangle
 class Rectangle extends PaintContent {
   Rectangle();
 
@@ -22,10 +22,10 @@ class Rectangle extends PaintContent {
     );
   }
 
-  /// 起始点
+  /// Starting point
   Offset startPoint = Offset.zero;
 
-  /// 结束点
+  /// End point
   Offset endPoint = Offset.zero;
 
   @override

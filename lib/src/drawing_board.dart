@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'drawing_controller.dart';
+import 'package:zoom_widget/zoom_widget.dart' as zoom;
 
+import 'color_picker_button.dart';
+import 'drawing_controller.dart';
 import 'helper/ex_value_builder.dart';
 import 'helper/get_size.dart';
 import 'paint_contents/circle.dart';
@@ -14,13 +16,17 @@ import 'paint_contents/smooth_line.dart';
 import 'paint_contents/straight_line.dart';
 import 'painter.dart';
 
-/// 默认工具栏构建器
+typedef DefaultActionsBuilder = List<Widget> Function(
+  DrawingController controller,
+);
+
+/// Default tools builder
 typedef DefaultToolsBuilder = List<DefToolItem> Function(
   Type currType,
   DrawingController controller,
 );
 
-/// 画板
+/// Drawing board
 class DrawingBoard extends StatefulWidget {
   const DrawingBoard({
     super.key,
@@ -32,67 +38,94 @@ class DrawingBoard extends StatefulWidget {
     this.onPointerMove,
     this.onPointerUp,
     this.clipBehavior = Clip.antiAlias,
+    this.defaultActionsBuilder,
     this.defaultToolsBuilder,
-    this.boardClipBehavior = Clip.hardEdge,
-    this.panAxis = PanAxis.free,
-    this.boardBoundaryMargin,
-    this.boardConstrained = false,
     this.maxScale = 20,
-    this.minScale = 0.2,
-    this.boardPanEnabled = true,
-    this.boardScaleEnabled = true,
-    this.boardScaleFactor = 200.0,
-    this.onInteractionEnd,
-    this.onInteractionStart,
-    this.onInteractionUpdate,
-    this.transformationController,
     this.alignment = Alignment.topCenter,
+    this.doubleTapZoom,
+    this.initialTotalZoomOut,
+    this.onPanUpPosition,
+    this.onPanDownPosition,
+    this.onPositionUpdate,
+    this.onScaleUpdate,
+    this.onTap,
   });
 
-  /// 画板背景控件
+  /// Background of the drawing board
   final Widget background;
 
-  /// 画板控制器
+  /// Controller of the drawing board
   final DrawingController? controller;
 
-  /// 显示默认样式的操作栏
+  /// Displays the default style action bar
   final bool showDefaultActions;
 
-  /// 显示默认样式的工具栏
+  /// Show default style toolbar
   final bool showDefaultTools;
 
-  /// 开始拖动
+  /// Callback function for the start of the dragging
   final Function(PointerDownEvent pde)? onPointerDown;
 
-  /// 正在拖动
+  /// Callback function for the dragging
   final Function(PointerMoveEvent pme)? onPointerMove;
 
-  /// 结束拖动
+  /// Callback function for the end of the dragging
   final Function(PointerUpEvent pue)? onPointerUp;
 
-  /// 边缘裁剪方式
+  /// Edge cropping method
   final Clip clipBehavior;
 
-  /// 默认工具栏构建器
+  /// Default actions builder
+  final DefaultActionsBuilder? defaultActionsBuilder;
+
+  /// Default toolbar builder
   final DefaultToolsBuilder? defaultToolsBuilder;
 
-  /// 缩放板属性
-  final Clip boardClipBehavior;
-  final PanAxis panAxis;
-  final EdgeInsets? boardBoundaryMargin;
-  final bool boardConstrained;
+  /// Properties for the zooming
   final double maxScale;
-  final double minScale;
-  final void Function(ScaleEndDetails)? onInteractionEnd;
-  final void Function(ScaleStartDetails)? onInteractionStart;
-  final void Function(ScaleUpdateDetails)? onInteractionUpdate;
-  final bool boardPanEnabled;
-  final bool boardScaleEnabled;
-  final double boardScaleFactor;
-  final TransformationController? transformationController;
   final AlignmentGeometry alignment;
+  final bool? doubleTapZoom;
+  final bool? initialTotalZoomOut;
+  final void Function(Offset)? onPanUpPosition;
+  final void Function(Offset)? onPanDownPosition;
+  final void Function(Offset)? onPositionUpdate;
+  final void Function(double, double)? onScaleUpdate;
+  final void Function()? onTap;
 
-  /// 默认工具项列表
+  static List<Widget> defaultActions(DrawingController controller) => <Widget>[
+        SizedBox(
+          height: 24,
+          width: 160,
+          child: ExValueBuilder<DrawConfig>(
+            valueListenable: controller.drawConfig,
+            shouldRebuild: (DrawConfig p, DrawConfig n) =>
+                p.strokeWidth != n.strokeWidth,
+            builder: (_, DrawConfig dc, ___) {
+              return Slider(
+                value: dc.strokeWidth,
+                max: 50,
+                min: 1,
+                onChanged: (double v) => controller.setStyle(strokeWidth: v),
+              );
+            },
+          ),
+        ),
+        ColorPickerButton(controller: controller),
+        IconButton(
+            icon: const Icon(CupertinoIcons.arrow_turn_up_left),
+            onPressed: () => controller.undo()),
+        IconButton(
+            icon: const Icon(CupertinoIcons.arrow_turn_up_right),
+            onPressed: () => controller.redo()),
+        IconButton(
+            icon: const Icon(CupertinoIcons.rotate_right),
+            onPressed: () => controller.turn()),
+        IconButton(
+            icon: const Icon(CupertinoIcons.trash),
+            onPressed: () => controller.clear()),
+      ];
+
+  /// Default tool list
   static List<DefToolItem> defaultTools(
       Type currType, DrawingController controller) {
     return <DefToolItem>[
@@ -141,22 +174,19 @@ class _DrawingBoardState extends State<DrawingBoard> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = InteractiveViewer(
+    Widget content = zoom.Zoom(
       maxScale: widget.maxScale,
-      minScale: widget.minScale,
-      boundaryMargin: widget.boardBoundaryMargin ??
-          EdgeInsets.all(MediaQuery.of(context).size.width),
-      clipBehavior: widget.boardClipBehavior,
-      panAxis: widget.panAxis,
-      constrained: widget.boardConstrained,
-      onInteractionStart: widget.onInteractionStart,
-      onInteractionUpdate: widget.onInteractionUpdate,
-      onInteractionEnd: widget.onInteractionEnd,
-      scaleFactor: widget.boardScaleFactor,
-      panEnabled: widget.boardPanEnabled,
-      scaleEnabled: widget.boardScaleEnabled,
-      transformationController: widget.transformationController,
-      child: Align(alignment: widget.alignment, child: _buildBoard),
+      doubleTapZoom: widget.doubleTapZoom ?? false,
+      initTotalZoomOut: widget.initialTotalZoomOut ?? true,
+      onTap: widget.onTap,
+      onPanUpPosition: widget.onPanUpPosition,
+      onPanDownPosition: widget.onPanDownPosition,
+      onPositionUpdate: widget.onPositionUpdate,
+      onScaleUpdate: widget.onScaleUpdate,
+      child: Align(
+        alignment: widget.alignment,
+        child: _buildBoard,
+      ),
     );
 
     if (widget.showDefaultActions || widget.showDefaultTools) {
@@ -178,7 +208,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建画板
+  /// Constructing the drawing board
   Widget get _buildBoard {
     return RepaintBoundary(
       key: _controller.painterKey,
@@ -217,13 +247,13 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建背景
+  /// Context of the image
   Widget get _buildImage => GetSize(
         onChange: (Size? size) => _controller.setBoardSize(size),
         child: widget.background,
       );
 
-  /// 构建绘制层
+  /// Constructing the drawing layer
   Widget get _buildPainter {
     return ExValueBuilder<DrawConfig>(
       valueListenable: _controller.drawConfig,
@@ -244,7 +274,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
     );
   }
 
-  /// 构建默认操作栏
+  /// Building the default action bar
   Widget get _buildDefaultActions {
     return Material(
       color: Colors.white,
@@ -252,44 +282,14 @@ class _DrawingBoardState extends State<DrawingBoard> {
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         child: Row(
-          children: <Widget>[
-            SizedBox(
-              height: 24,
-              width: 160,
-              child: ExValueBuilder<DrawConfig>(
-                valueListenable: _controller.drawConfig,
-                shouldRebuild: (DrawConfig p, DrawConfig n) =>
-                    p.strokeWidth != n.strokeWidth,
-                builder: (_, DrawConfig dc, ___) {
-                  return Slider(
-                    value: dc.strokeWidth,
-                    max: 50,
-                    min: 1,
-                    onChanged: (double v) =>
-                        _controller.setStyle(strokeWidth: v),
-                  );
-                },
-              ),
-            ),
-            IconButton(
-                icon: const Icon(CupertinoIcons.arrow_turn_up_left),
-                onPressed: () => _controller.undo()),
-            IconButton(
-                icon: const Icon(CupertinoIcons.arrow_turn_up_right),
-                onPressed: () => _controller.redo()),
-            IconButton(
-                icon: const Icon(CupertinoIcons.rotate_right),
-                onPressed: () => _controller.turn()),
-            IconButton(
-                icon: const Icon(CupertinoIcons.trash),
-                onPressed: () => _controller.clear()),
-          ],
+          children: widget.defaultActionsBuilder?.call(_controller) ??
+              DrawingBoard.defaultActions(_controller),
         ),
       ),
     );
   }
 
-  /// 构建默认工具栏
+  /// Building the default toolbar
   Widget get _buildDefaultTools {
     return Material(
       color: Colors.white,
@@ -317,7 +317,7 @@ class _DrawingBoardState extends State<DrawingBoard> {
   }
 }
 
-/// 默认工具项配置文件
+/// Default tool item
 class DefToolItem {
   DefToolItem({
     required this.icon,
@@ -337,7 +337,7 @@ class DefToolItem {
   final Color activeColor;
 }
 
-/// 默认工具项 Widget
+/// Widget for the default tool items
 class _DefToolItemWidget extends StatelessWidget {
   const _DefToolItemWidget({
     required this.item,
