@@ -3,9 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import '../paint_contents.dart';
 import 'helper/safe_value_notifier.dart';
-import 'paint_contents/paint_content.dart';
-import 'paint_contents/simple_line.dart';
 
 /// Drawing parameters
 class DrawConfig {
@@ -278,6 +277,10 @@ class DrawingController {
 
   /// Starting drawing
   void startDraw(Offset startPoint) {
+    if (_paintContent is EmptyContent) {
+      return;
+    }
+
     _startPoint = startPoint;
     currentContent = _paintContent.copy();
     currentContent?.paint = drawConfig.value.paint;
@@ -292,12 +295,20 @@ class DrawingController {
 
   /// Drawing in progress
   void drawing(Offset nowPaint) {
+    if (currentContent is EmptyContent) {
+      return;
+    }
+
     currentContent?.drawing(nowPaint);
     _refresh();
   }
 
   /// Finish drawing
   void endDraw() {
+    if (currentContent is EmptyContent) {
+      return;
+    }
+
     _startPoint = null;
     final int hisLen = _history.length;
 
@@ -354,7 +365,10 @@ class DrawingController {
 
   /// Converting the content of the drawing board to JSON
   List<Map<String, dynamic>> getJsonList() {
-    return _history.map((PaintContent e) => e.toJson()).toList();
+    return _history
+        .take(_currentIndex)
+        .map((PaintContent e) => e.toJson())
+        .toList();
   }
 
   /// Refreshing the surface panel
