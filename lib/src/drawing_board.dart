@@ -16,6 +16,10 @@ import 'paint_contents/smooth_line.dart';
 import 'paint_contents/straight_line.dart';
 import 'painter.dart';
 
+typedef DefaultActionsBuilder = List<Widget> Function(
+  DrawingController controller,
+);
+
 /// Default tools builder
 typedef DefaultToolsBuilder = List<DefToolItem> Function(
   Type currType,
@@ -34,6 +38,7 @@ class DrawingBoard extends StatefulWidget {
     this.onPointerMove,
     this.onPointerUp,
     this.clipBehavior = Clip.antiAlias,
+    this.defaultActionsBuilder,
     this.defaultToolsBuilder,
     this.maxScale = 20,
     this.alignment = Alignment.topCenter,
@@ -70,6 +75,9 @@ class DrawingBoard extends StatefulWidget {
   /// Edge cropping method
   final Clip clipBehavior;
 
+  /// Default actions builder
+  final DefaultActionsBuilder? defaultActionsBuilder;
+
   /// Default toolbar builder
   final DefaultToolsBuilder? defaultToolsBuilder;
 
@@ -83,6 +91,39 @@ class DrawingBoard extends StatefulWidget {
   final void Function(Offset)? onPositionUpdate;
   final void Function(double, double)? onScaleUpdate;
   final void Function()? onTap;
+
+  static List<Widget> defaultActions(DrawingController controller) => <Widget>[
+        SizedBox(
+          height: 24,
+          width: 160,
+          child: ExValueBuilder<DrawConfig>(
+            valueListenable: controller.drawConfig,
+            shouldRebuild: (DrawConfig p, DrawConfig n) =>
+                p.strokeWidth != n.strokeWidth,
+            builder: (_, DrawConfig dc, ___) {
+              return Slider(
+                value: dc.strokeWidth,
+                max: 50,
+                min: 1,
+                onChanged: (double v) => controller.setStyle(strokeWidth: v),
+              );
+            },
+          ),
+        ),
+        ColorPickerButton(controller: controller),
+        IconButton(
+            icon: const Icon(CupertinoIcons.arrow_turn_up_left),
+            onPressed: () => controller.undo()),
+        IconButton(
+            icon: const Icon(CupertinoIcons.arrow_turn_up_right),
+            onPressed: () => controller.redo()),
+        IconButton(
+            icon: const Icon(CupertinoIcons.rotate_right),
+            onPressed: () => controller.turn()),
+        IconButton(
+            icon: const Icon(CupertinoIcons.trash),
+            onPressed: () => controller.clear()),
+      ];
 
   /// Default tool list
   static List<DefToolItem> defaultTools(
@@ -241,39 +282,8 @@ class _DrawingBoardState extends State<DrawingBoard> {
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         child: Row(
-          children: <Widget>[
-            SizedBox(
-              height: 24,
-              width: 160,
-              child: ExValueBuilder<DrawConfig>(
-                valueListenable: _controller.drawConfig,
-                shouldRebuild: (DrawConfig p, DrawConfig n) =>
-                    p.strokeWidth != n.strokeWidth,
-                builder: (_, DrawConfig dc, ___) {
-                  return Slider(
-                    value: dc.strokeWidth,
-                    max: 50,
-                    min: 1,
-                    onChanged: (double v) =>
-                        _controller.setStyle(strokeWidth: v),
-                  );
-                },
-              ),
-            ),
-            ColorPickerButton(controller: _controller),
-            IconButton(
-                icon: const Icon(CupertinoIcons.arrow_turn_up_left),
-                onPressed: () => _controller.undo()),
-            IconButton(
-                icon: const Icon(CupertinoIcons.arrow_turn_up_right),
-                onPressed: () => _controller.redo()),
-            IconButton(
-                icon: const Icon(CupertinoIcons.rotate_right),
-                onPressed: () => _controller.turn()),
-            IconButton(
-                icon: const Icon(CupertinoIcons.trash),
-                onPressed: () => _controller.clear()),
-          ],
+          children: widget.defaultActionsBuilder?.call(_controller) ??
+              DrawingBoard.defaultActions(_controller),
         ),
       ),
     );
