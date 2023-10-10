@@ -269,6 +269,13 @@ class DrawingController {
     _refreshDeep();
   }
 
+  /// Remove content by index
+  void removeContent(int index) {
+    _history.removeAt(index);
+    _currentIndex--;
+    _refreshDeep();
+  }
+
   /// * Rotate the canvas 90° clockwise
   void turn() {
     drawConfig.value =
