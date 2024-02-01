@@ -333,12 +333,20 @@ class DrawingController {
     _refreshDeep();
   }
 
+  bool canUndo() {
+    return _currentIndex > 0;
+  }
+
   /// Undo
   void undo() {
     if (_currentIndex > 0) {
       _currentIndex = _currentIndex - 1;
       _refreshDeep();
     }
+  }
+
+  bool canRedo() {
+    return _currentIndex < _history.length;
   }
 
   /// Redo
