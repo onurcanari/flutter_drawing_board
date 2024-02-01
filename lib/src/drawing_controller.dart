@@ -1,3 +1,6 @@
+// ignore_for_file: avoid_dynamic_calls
+
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -147,6 +150,16 @@ class DrawingController {
         config ?? DrawConfig.def(contentType: SimpleLine));
     setPaintContent(content ?? SimpleLine());
   }
+
+  static const Map<String, dynamic> PAINT_CONTENT_FACTORIES_BY_TYPES =
+      <String, dynamic>{
+    'SimpleLine': SimpleLine.fromJson,
+    'SmoothLine': SmoothLine.fromJson,
+    'StraightLine': StraightLine.fromJson,
+    'Rectangle': Rectangle.fromJson,
+    'Circle': Circle.fromJson,
+    'Eraser': Eraser.fromJson
+  };
 
   /// Start point
   Offset? _startPoint;
@@ -384,6 +397,26 @@ class DrawingController {
         .take(_currentIndex)
         .map((PaintContent e) => e.toJson())
         .toList();
+  }
+
+  /// Converting the content of the drawing board to JSON
+  String export() {
+    return jsonEncode(getJsonList());
+  }
+
+  /// Loading the content of the drawing board from JSON
+  void load(String canvasJson) {
+    final List<Map<String, dynamic>> decodedPaints =
+        List<Map<String, dynamic>>.from(
+            jsonDecode(canvasJson) as Iterable<dynamic>);
+
+    final List<PaintContent> contents = decodedPaints
+        .map((Map<String, dynamic> contentMap) =>
+            (PAINT_CONTENT_FACTORIES_BY_TYPES[contentMap['type']])(contentMap)
+                as PaintContent)
+        .toList();
+
+    addContents(contents);
   }
 
   /// Refreshing the surface panel
